@@ -1,12 +1,18 @@
-package transaction
+package transactiondto
 
-type CreateTransaction struct {
-	Status       string `json:"status" form:"status" gorm:"type: varchar(255)"`
-	FundID       int    `json:"fund_id" form:"fund_id" gorm:"type: int"`
-	UserFundID   int    `json:"userfund_id" form:"userfund_id" gorm:"type: int"`
-	UserDonateID int    `json:"userdonate_id" form:"userdonate_id" gorm:"type:int"`
+import "time"
+
+type CreateTransactionRequest struct {
+	FundID       int       `json:"fund_id" form:"fund_id"`
+	UserDonateID int       `json:"user_donate_id" form:"user_donate_id"`
+	UserFundID   int       `json:"user_fund_id" form:"user_fund_id"`
+	Status       string    `json:"status" form:"status"`
+	DonateAmount int       `json:"donate_amount"`
+	CreatedAt    time.Time `json:"create_at"`
+	UpdatedAt    time.Time `json:"-"`
 }
 
-type UpdateTransactionRequest struct {
-	Status string `json:"status" form:"status" gorm:"type: varchar(255)"`
+type UpdateOrderRequest struct {
+	Qty         int `json:"qty" form:"qty"`
+	Price_order int `json:"price_order" form:"price_order"`
 }

@@ -21,65 +21,10 @@ func HandlerTransaction(TransactionRepository repositories.TransactionRepository
 	return &handlerTransaction{TransactionRepository}
 }
 
-func (h *handlerTransaction) FindTransaction(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "application/json")
-
-	id, _ := strconv.Atoi(mux.Vars(r)["id"])
-
-	transaction, err := h.TransactionRepository.FindTransaction(id)
-	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		response := dto.ErrorResult{Code: http.StatusBadRequest, Message: err.Error()}
-		json.NewEncoder(w).Encode(response)
-		return
-	}
-
-	w.WriteHeader(http.StatusOK)
-	response := dto.SuccessResult{Code: http.StatusOK, Data: transaction}
-	json.NewEncoder(w).Encode(response)
-}
-
-func (h *handlerTransaction) FindTransactionBySeller(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "application/json")
-
-	id, _ := strconv.Atoi(mux.Vars(r)["id"])
-
-	transaction, err := h.TransactionRepository.FindTransactionBySeller(id)
-	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		response := dto.ErrorResult{Code: http.StatusBadRequest, Message: err.Error()}
-		json.NewEncoder(w).Encode(response)
-		return
-	}
-
-	w.WriteHeader(http.StatusOK)
-	response := dto.SuccessResult{Code: http.StatusOK, Data: transaction}
-	json.NewEncoder(w).Encode(response)
-}
-
-func (h *handlerTransaction) GetTransaction(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "application/json")
-
-	id, _ := strconv.Atoi(mux.Vars(r)["id"])
-
-	var transaction models.Transaction
-	transaction, err := h.TransactionRepository.GetTransaction(id)
-	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		response := dto.ErrorResult{Code: http.StatusBadRequest, Message: err.Error()}
-		json.NewEncoder(w).Encode(response)
-		return
-	}
-
-	w.WriteHeader(http.StatusOK)
-	response := dto.SuccessResult{Code: http.StatusOK, Data: transaction}
-	json.NewEncoder(w).Encode(response)
-}
-
 func (h *handlerTransaction) CreateTransaction(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
-	request := new(transactiondto.CreateTransaction)
+	request := new(transactiondto.CreateTransactionRequest)
 	if err := json.NewDecoder(r.Body).Decode(&request); err != nil {
 		w.WriteHeader(http.StatusBadRequest)
 		response := dto.ErrorResult{Code: http.StatusBadRequest, Message: err.Error()}
@@ -96,13 +41,12 @@ func (h *handlerTransaction) CreateTransaction(w http.ResponseWriter, r *http.Re
 		return
 	}
 
-	status := "Finished"
-
 	transaction := models.Transaction{
-		Status:       status,
 		FundID:       request.FundID,
 		UserFundID:   request.UserFundID,
 		UserDonateID: request.UserDonateID,
+		Status:       request.Status,
+		DonateAmount: request.DonateAmount,
 	}
 
 	transaction, err = h.TransactionRepository.CreateTransaction(transaction)
@@ -117,5 +61,66 @@ func (h *handlerTransaction) CreateTransaction(w http.ResponseWriter, r *http.Re
 
 	w.WriteHeader(http.StatusOK)
 	response := dto.SuccessResult{Code: http.StatusOK, Data: transaction}
+	json.NewEncoder(w).Encode(response)
+}
+
+func (h *handlerTransaction) GetTransactionByFund(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+
+	id, _ := strconv.Atoi(mux.Vars(r)["id"])
+
+	transaction, err := h.TransactionRepository.GetTransactionByFund(id)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		response := dto.ErrorResult{Code: http.StatusBadRequest, Message: err.Error()}
+		json.NewEncoder(w).Encode(response)
+		return
+	}
+
+	w.WriteHeader(http.StatusOK)
+	response := dto.SuccessResult{Code: http.StatusOK, Data: transaction}
+	json.NewEncoder(w).Encode(response)
+}
+
+func (h *handlerTransaction) GetTransactionByUser(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+
+	id, _ := strconv.Atoi(mux.Vars(r)["id"])
+
+	transaction, err := h.TransactionRepository.GetTransactionByUser(id)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		response := dto.ErrorResult{Code: http.StatusBadRequest, Message: err.Error()}
+		json.NewEncoder(w).Encode(response)
+		return
+	}
+
+	w.WriteHeader(http.StatusOK)
+	response := dto.SuccessResult{Code: http.StatusOK, Data: transaction}
+	json.NewEncoder(w).Encode(response)
+}
+
+func (h *handlerTransaction) DeleteTransaction(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+	id, _ := strconv.Atoi(mux.Vars(r)["id"])
+
+	transaction, err := h.TransactionRepository.GetTransaction(id)
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		response := dto.ErrorResult{Code: http.StatusBadRequest, Message: err.Error()}
+		json.NewEncoder(w).Encode(response)
+		return
+	}
+
+	data, err := h.TransactionRepository.DeleteTransaction(id, transaction)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		response := dto.ErrorResult{Code: http.StatusInternalServerError, Message: err.Error()}
+		json.NewEncoder(w).Encode(response)
+		return
+	}
+
+	w.WriteHeader(http.StatusOK)
+	response := dto.SuccessResult{Code: http.StatusOK, Data: data}
 	json.NewEncoder(w).Encode(response)
 }
