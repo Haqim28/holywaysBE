@@ -6,6 +6,7 @@ import (
 	"holyways/pkg/mysql"
 	"holyways/routes"
 	"net/http"
+	"os"
 
 	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
@@ -34,12 +35,14 @@ func main() {
 	var AllowedMethods = handlers.AllowedMethods([]string{"GET", "POST", "PUT", "HEAD", "OPTIONS", "PATCH", "DELETE"})
 	var AllowedOrigins = handlers.AllowedOrigins([]string{"*"})
 
-	var port = "5000"
+	// var port = "5000"
+	var port = os.Getenv("PORT")
 	fmt.Println("server running localhost:" + port)
 
 	// Embed the setup allowed in 2 parameter on this below code ...
-	http.ListenAndServe("localhost:"+port, handlers.CORS(AllowedHeaders, AllowedMethods, AllowedOrigins)(r))
+	// http.ListenAndServe("localhost:"+port, handlers.CORS(AllowedHeaders, AllowedMethods, AllowedOrigins)(r))
+	http.ListenAndServe(":"+port, handlers.CORS(AllowedHeaders, AllowedMethods, AllowedOrigins)(r))
 
-	fmt.Println("server running localhost:5000")
-	http.ListenAndServe("localhost:5000", r)
+	// fmt.Println("server running localhost:5000")
+	// http.ListenAndServe("localhost:5000", r)
 }
