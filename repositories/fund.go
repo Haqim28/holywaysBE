@@ -50,7 +50,7 @@ func (r *repository) UpdateFund(fund models.Fund, ID int) (models.Fund, error) {
 }
 
 func (r *repository) DeleteFund(fund models.Fund, ID int) (models.Fund, error) {
-	err := r.db.Exec("SET FOREIGN_KEY_CHECKS=0;").Raw("DELETE FROM funds WHERE id=?", ID).Scan(&fund).Error
+	err := r.db.Exec("SET FOREIGN_KEY_CHECKS=0;").Raw("DELETE FROM fund WHERE id=?", ID).Scan(&fund).Error
 
 	return fund, err
 }
