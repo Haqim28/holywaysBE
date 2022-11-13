@@ -12,7 +12,7 @@ type FundRepository interface {
 	GetFund(ID int) (models.Fund, error)
 	GetFundByUser(ID int) ([]models.Fund, error)
 	UpdateFund(Fund models.Fund, ID int) (models.Fund, error)
-	DeleteFund(fund models.Fund) (models.Fund, error)
+	DeleteFund(fund models.Fund, ID int) (models.Fund, error)
 }
 
 func RepositoryFund(db *gorm.DB) *repository {
@@ -49,7 +49,7 @@ func (r *repository) UpdateFund(fund models.Fund, ID int) (models.Fund, error) {
 	return fund, err
 }
 
-func (r *repository) DeleteFund(fund models.Fund) (models.Fund, error) {
+func (r *repository) DeleteFund(fund models.Fund, ID int) (models.Fund, error) {
 	err := r.db.Delete(&fund).Error
 
 	return fund, err
