@@ -62,7 +62,7 @@ func (r *repository) GetTransactionByUser(ID int) ([]models.Transaction, error) 
 // }
 
 func (r *repository) DeleteTransaction(ID int, transaction models.Transaction) (models.Transaction, error) {
-	err := r.db.Delete(&transaction).Error
+	err := r.db.Exec("SET FOREIGN_KEY_CHECKS=0;").Raw("DELETE FROM products WHERE id=?", ID).Scan(&transaction).Error
 	return transaction, err
 }
 
