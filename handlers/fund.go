@@ -8,8 +8,13 @@ import (
 	"holyways/models"
 	"holyways/repositories"
 	"net/http"
+	"os"
 	"strconv"
 
+	"context"
+
+	"github.com/cloudinary/cloudinary-go/v2"
+	"github.com/cloudinary/cloudinary-go/v2/api/uploader"
 	"github.com/go-playground/validator/v10"
 	"github.com/gorilla/mux"
 )
@@ -104,11 +109,27 @@ func (h *handlerFund) CreateFund(w http.ResponseWriter, r *http.Request) {
 		json.NewEncoder(w).Encode(response)
 		return
 	}
+
+	var ctx = context.Background()
+	var CLOUD_NAME = os.Getenv("CLOUD_NAME")
+	var API_KEY = os.Getenv("API_KEY")
+	var API_SECRET = os.Getenv("API_SECRET")
+
+	// Add your Cloudinary credentials ...
+	cld, _ := cloudinary.NewFromParams(CLOUD_NAME, API_KEY, API_SECRET)
+
+	// Upload file to Cloudinary ...
+	resp, err := cld.Upload.Upload(ctx, filename, uploader.UploadParams{Folder: "holyways"})
+
+	if err != nil {
+		fmt.Println(err.Error())
+	}
+
 	status := "Running"
 
 	fund := models.Fund{
 		Title:       request.Title,
-		Image:       "http://localhost:5000/uploads/" + filename,
+		Image:       resp.SecureURL,
 		Goal:        request.Goal,
 		Description: request.Description,
 		Status:      status,
