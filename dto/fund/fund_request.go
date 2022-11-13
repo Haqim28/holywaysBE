@@ -9,9 +9,11 @@ type CreateFundRequest struct {
 }
 
 type UpdateFundRequest struct {
-	Title       string `json:"title" form:"title" validate:"required"`
-	Image       string `json:"image" form:"image" validate:"required"`
-	Goal        int    `json:"goal" form:"goal"`
-	Description string `json:"description" form:"description" validate:"required"`
-	UserID      int    `json:"user_id" form:"user_id" validate:"required"`
+	Status string `json:"status" form:"status"`
+	// Title       string `json:"title" form:"title" `
+	// Image       string `json:"image" form:"image" `
+	// Goal        int    `json:"goal" form:"goal"`
+	// Status      string `json:"status" form:"status"`
+	// Description string `json:"description" form:"description" `
+	// UserID      int    `json:"user_id" form:"user_id" `
 }

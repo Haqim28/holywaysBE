@@ -17,5 +17,6 @@ func FundRoutes(r *mux.Router) {
 	r.HandleFunc("/fund/{id}", h.GetFund).Methods("GET")
 	r.HandleFunc("/funds/{id}", h.GetFundByUser).Methods("GET")
 	r.HandleFunc("/fund", middleware.UploadFile(h.CreateFund)).Methods("POST")
-	r.HandleFunc("/cart/{id}", h.UpdateFund).Methods("PATCH")
+	r.HandleFunc("/fund/{id}", h.UpdateFund).Methods("PATCH")
+	r.HandleFunc("/fund/{id}", h.DeleteFund).Methods("DELETE")
 }

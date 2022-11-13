@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"encoding/json"
+	"fmt"
 	funddto "holyways/dto/fund"
 	dto "holyways/dto/result"
 	"holyways/models"
@@ -103,13 +104,14 @@ func (h *handlerFund) CreateFund(w http.ResponseWriter, r *http.Request) {
 		json.NewEncoder(w).Encode(response)
 		return
 	}
-	// status := "pending"
+	status := "Running"
 
 	fund := models.Fund{
 		Title:       request.Title,
 		Image:       "http://localhost:5000/uploads/" + filename,
 		Goal:        request.Goal,
 		Description: request.Description,
+		Status:      status,
 		UserID:      userid,
 	}
 
@@ -135,12 +137,13 @@ func (h *handlerFund) UpdateFund(w http.ResponseWriter, r *http.Request) {
 	request := new(funddto.UpdateFundRequest)
 	if err := json.NewDecoder(r.Body).Decode(&request); err != nil {
 		w.WriteHeader(http.StatusBadRequest)
-		response := dto.ErrorResult{Code: http.StatusBadRequest, Message: err.Error()}
+		response := dto.ErrorResult{Code: http.StatusBadRequest, Message: "err.Error()"}
 		json.NewEncoder(w).Encode(response)
 		return
 	}
 
 	id, _ := strconv.Atoi(mux.Vars(r)["id"])
+
 	fund, err := h.FundRepository.GetFund(int(id))
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
@@ -148,20 +151,38 @@ func (h *handlerFund) UpdateFund(w http.ResponseWriter, r *http.Request) {
 		json.NewEncoder(w).Encode(response)
 		return
 	}
-	if request.Title != "" {
-		fund.Title = request.Title
-	}
-	if request.Image != "" {
-		fund.Image = request.Image
-	}
-	if request.Goal != 0 {
-		fund.Goal = request.Goal
-	}
-	if request.Description != "" {
-		fund.Description = request.Description
+
+	if request.Status != "" {
+		fund.Status = request.Status
 	}
 
 	data, err := h.FundRepository.UpdateFund(fund, id)
+	fmt.Println("ini fund", fund.Status)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		response := dto.ErrorResult{Code: http.StatusInternalServerError, Message: "err.sError()"}
+		json.NewEncoder(w).Encode(response)
+		return
+	}
+
+	w.WriteHeader(http.StatusOK)
+	response := dto.SuccessResult{Code: http.StatusOK, Data: data}
+	json.NewEncoder(w).Encode(response)
+}
+
+func (h *handlerFund) DeleteFund(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+
+	id, _ := strconv.Atoi(mux.Vars(r)["id"])
+	fund, err := h.FundRepository.GetFund(id)
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		response := dto.ErrorResult{Code: http.StatusBadRequest, Message: err.Error()}
+		json.NewEncoder(w).Encode(response)
+		return
+	}
+
+	data, err := h.FundRepository.DeleteFund(fund)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		response := dto.ErrorResult{Code: http.StatusInternalServerError, Message: err.Error()}

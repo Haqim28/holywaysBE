@@ -12,6 +12,7 @@ type FundRepository interface {
 	GetFund(ID int) (models.Fund, error)
 	GetFundByUser(ID int) ([]models.Fund, error)
 	UpdateFund(Fund models.Fund, ID int) (models.Fund, error)
+	DeleteFund(fund models.Fund) (models.Fund, error)
 }
 
 func RepositoryFund(db *gorm.DB) *repository {
@@ -20,7 +21,7 @@ func RepositoryFund(db *gorm.DB) *repository {
 
 func (r *repository) FindFunds() ([]models.Fund, error) {
 	var funds []models.Fund
-	err := r.db.Preload("User").Preload("UserDonate").Find(&funds).Error
+	err := r.db.Where("status = 'Running'").Preload("User").Preload("UserDonate").Find(&funds).Error
 	return funds, err
 }
 
@@ -31,9 +32,7 @@ func (r *repository) CreateFund(fund models.Fund) (models.Fund, error) {
 
 func (r *repository) GetFund(ID int) (models.Fund, error) {
 	var fund models.Fund
-
 	err := r.db.Preload("User").Preload("UserDonate").First(&fund, ID).Error
-
 	return fund, err
 }
 
@@ -47,6 +46,11 @@ func (r *repository) GetFundByUser(ID int) ([]models.Fund, error) {
 
 func (r *repository) UpdateFund(fund models.Fund, ID int) (models.Fund, error) {
 	err := r.db.Save(&fund).Error
+	return fund, err
+}
+
+func (r *repository) DeleteFund(fund models.Fund) (models.Fund, error) {
+	err := r.db.Delete(&fund).Error
 
 	return fund, err
 }
