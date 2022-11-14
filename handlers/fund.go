@@ -203,7 +203,7 @@ func (h *handlerFund) DeleteFund(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	data, err := h.FundRepository.DeleteFund(fund, id)
+	data, err := h.FundRepository.DeleteFund(id, fund)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		response := dto.ErrorResult{Code: http.StatusInternalServerError, Message: err.Error()}
