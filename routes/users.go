@@ -14,7 +14,7 @@ func UserRoutes(r *mux.Router) {
 	h := handlers.HandlerUser(userRepository)
 
 	r.HandleFunc("/users", h.FindUsers).Methods("GET")
-	r.HandleFunc("/user/{id}", h.GetUser).Methods("GET")
+	r.HandleFunc("/user/{id}", middleware.Auth(h.GetUser)).Methods("GET")
 	// r.HandleFunc("/user/role/{role}", h.GetRole).Methods("GET")
 	// r.HandleFunc("/user/role/{role}/{id}", h.GetRoleId).Methods("GET")
 	r.HandleFunc("/user", h.CreateUser).Methods("POST")
